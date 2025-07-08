@@ -1,0 +1,31 @@
+{
+  "name": "apibloglist",
+  "version": "1.0.0",
+  "description": "blog list application, which allows users to save information about interesting blogs they have come across on the Internet.",
+  "homepage": "https://github.com/guillmh/apiBlogList#readme",
+  "bugs": {
+    "url": "https://github.com/guillmh/apiBlogList/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guillmh/apiBlogList.git"
+  },
+  "license": "ISC",
+  "author": "Guillber Mendez",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0",
+    "mongoose": "^8.16.2"
+  }
+}
