@@ -4,11 +4,15 @@
 // o para escribir en archivos de log, sin tener que cambiar cada llamada a console.log en el código.
 
 const info = (...params) => {
-  console.log(...params);
+  if (process.env.NODE_ENV !== "test") {
+    console.log(...params);
+  }
 };
 
 const error = (...params) => {
-  console.error(...params);
+  if (process.env.NODE_ENV !== "test") {
+    console.error(...params);
+  }
 };
 
 module.exports = { info, error };
