@@ -4,9 +4,15 @@ const mongoose = require("mongoose");
 // Define el esquema (la estructura) para los documentos de la colección de blogs.
 // Cada blog en la base de datos deberá tener estos campos con sus respectivos tipos de datos.
 const blogSchema = new mongoose.Schema({
-  title: String,
+  title: {
+    type: String,
+    required: true,
+  },
   author: String,
-  url: String,
+  url: {
+    type: String,
+    required: true,
+  },
   likes: { type: Number, default: 0 },
 });
 

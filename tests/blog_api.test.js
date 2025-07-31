@@ -69,6 +69,15 @@ test("Check that if the likes property, it will have the default value 0", async
   expect(sendBlog.body.likes).toBe(0);
 });
 //Prueba 5
+test("Checks if the title or url properties of the requested data are missing", async () => {
+  const newBlog = {
+    author: "Autor 1",
+    likes: 5,
+  };
+
+  const senRes = await api.post("/api/blogs").send(newBlog);
+  expect(senRes.status).toBe(400);
+});
 
 afterAll(async () => {
   await mongoose.connection.close();
