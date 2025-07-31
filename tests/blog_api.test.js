@@ -56,6 +56,19 @@ test("successfully create a new blog post and check that the total number of blo
   expect(newTotal).toBe(totalBlogs + 1);
   expect(postBlog.status).toBe(201);
 });
+//prueba 4
+test("Check that if the likes property, it will have the default value 0", async () => {
+  const blogWithoutLikes = {
+    title: "Blog sin likes",
+    author: "Autor X",
+    url: "http://ejemplo.com",
+  };
+
+  const sendBlog = await api.post("/api/blogs").send(blogWithoutLikes);
+  expect(sendBlog.status).toBe(201);
+  expect(sendBlog.body.likes).toBe(0);
+});
+//Prueba 5
 
 afterAll(async () => {
   await mongoose.connection.close();
