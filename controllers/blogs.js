@@ -1,35 +1,44 @@
-// Importa y crea una nueva instancia de un enrutador de Express.
-// Este enrutador nos permite definir rutas para un módulo específico (en este caso, los blogs)
-// y mantener nuestro código principal (app.js) más limpio y organizado.
+// Enrutador de Express para blogs
 const blogsRouter = require("express").Router();
 
-// Importa el modelo 'Blog' de Mongoose.
-// Este objeto nos permitirá interactuar con la colección de 'blogs' en la base de datos
-// para realizar operaciones como crear, leer, actualizar o borrar (CRUD).
+// Modelo Blog de Mongoose
 const Blog = require("../models/blog");
 
-// Define un manejador para las peticiones GET a la ruta raíz del enrutador ('/api/blogs/').
-// Esta ruta se utiliza para obtener todos los blogs.
-// NOTA: Se podría mejorar usando async/await para un código más legible.
-blogsRouter.get("/", async (request, response, next) => {
+// Obtener todos los blogs
+blogsRouter.get("/", async (requ, res, next) => {
   // Utiliza el método `find` del modelo Blog para buscar todos los documentos en la colección.
   // Un objeto de filtro vacío `{}` significa 'traer todos los documentos'.
   // El método `find` devuelve una promesa.
   const blogs = await Blog.find({});
-  response.json(blogs);
+  res.json(blogs);
 });
 
-// Define un manejador para las peticiones POST a la ruta raíz ('/api/blogs/').
-// Esta ruta se utiliza para crear un nuevo blog.
-blogsRouter.post("/", async (request, response, next) => {
+// Crear un nuevo blog
+blogsRouter.post("/", async (req, res, next) => {
   try {
-    const blog = new Blog(request.body);
+    const blog = new Blog(req.body);
     const savedBlog = await blog.save();
-    response.status(201).json(savedBlog);
+    res.status(201).json(savedBlog);
   } catch (error) {
     next(error); // Deja que el middleware de manejo de errores lo procese
   }
 });
 
-// Exporta el enrutador para que pueda ser utilizado en el archivo principal de la aplicación (`app.js`).
+//Elimina un recurso por ID
+blogsRouter.delete("/:id", async (req, res, next) => {
+  const id = req.params.id;
+  try {
+    const blogDelete = await Blog.findByIdAndDelete(id);
+    if (!blogDelete) {
+      return res.status(404).json({ error: "blog not found" });
+    }
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+});
+
+//Actualiza un recurso por ID
+
+// Exportar enrutador
 module.exports = blogsRouter;
