@@ -1,8 +1,11 @@
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
+const bcryptjs = require("bcryptjs");
+const helper = require("../utils/test_helper");
 
 const Blog = require("../models/blog");
+const User = require("../models/user");
 
 const api = supertest(app);
 
@@ -20,11 +23,11 @@ const initialBlogs = [
     likes: 3,
   },
 ];
-
 beforeEach(async () => {
   await Blog.deleteMany({});
   await Blog.insertMany(initialBlogs);
 });
+
 //Prueba 1
 test("notes are returned as json", async () => {
   await api
@@ -77,6 +80,59 @@ test("Checks if the title or url properties of the requested data are missing", 
 
   const senRes = await api.post("/api/blogs").send(newBlog);
   expect(senRes.status).toBe(400);
+});
+
+//Pruebas para usuarios
+describe("user testing", () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
+    const passwordHash = await bcryptjs.hash("sekret", 10);
+    const user = new User({ username: "root", passwordHash });
+    await user.save();
+  });
+
+  test("creation succeeds with a new username", async () => {
+    const usersAtStart = await helper.usersInDb();
+    const newUser = {
+      username: "AlexaSt",
+      name: "Alexa Martinez",
+      password: "draco123",
+    };
+
+    await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    const usersAtEnd = await helper.usersInDb();
+
+    // Verifica que haya un usuario más que antes
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1);
+
+    // Verifica que el nombre de usuario nuevo esté en la base de datos
+    const usernames = usersAtEnd.map((u) => u.username);
+    expect(usernames).toContain(newUser.username);
+  });
+
+  test("creation fails with proper statuscode and message if username already taken", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: "root",
+      name: "Superuser",
+      password: "datasu",
+    };
+
+    const result = await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd.length).toBe(usersAtStart.length);
+  });
 });
 
 afterAll(async () => {
