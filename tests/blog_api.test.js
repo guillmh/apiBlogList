@@ -90,7 +90,7 @@ describe("user testing", () => {
     const user = new User({ username: "root", passwordHash });
     await user.save();
   });
-
+  //prueba 1
   test("creation succeeds with a new username", async () => {
     const usersAtStart = await helper.usersInDb();
     const newUser = {
@@ -114,7 +114,7 @@ describe("user testing", () => {
     const usernames = usersAtEnd.map((u) => u.username);
     expect(usernames).toContain(newUser.username);
   });
-
+  //prueba 2
   test("creation fails with proper statuscode and message if username already taken", async () => {
     const usersAtStart = await helper.usersInDb();
 
@@ -122,6 +122,24 @@ describe("user testing", () => {
       username: "root",
       name: "Superuser",
       password: "datasu",
+    };
+    await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd.length).toBe(usersAtStart.length);
+  });
+  //prueba 3
+  test("the username has less than 3 characters", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: "ag",
+      name: "Agusto",
+      password: "data2",
     };
 
     const result = await api
@@ -131,8 +149,10 @@ describe("user testing", () => {
       .expect("Content-Type", /application\/json/);
 
     const usersAtEnd = await helper.usersInDb();
-    expect(usersAtEnd.length).toBe(usersAtStart.length);
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
   });
+
+  //prueba 4 password corto o noseguro
 });
 
 afterAll(async () => {
