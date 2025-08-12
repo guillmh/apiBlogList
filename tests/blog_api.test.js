@@ -142,7 +142,7 @@ describe("user testing", () => {
       password: "data2",
     };
 
-    const result = await api
+    await api
       .post("/api/users")
       .send(newUser)
       .expect(400)
@@ -151,8 +151,24 @@ describe("user testing", () => {
     const usersAtEnd = await helper.usersInDb();
     expect(usersAtEnd).toHaveLength(usersAtStart.length);
   });
+  //prueba 4
+  test("the password has less tehan 3 characters", async () => {
+    const usersAtStart = await helper.usersInDb();
 
-  //prueba 4 password corto o noseguro
+    const newUser = {
+      username: "Goku",
+      name: "Andres",
+      password: "da",
+    };
+
+    await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+  });
 });
 
 afterAll(async () => {
