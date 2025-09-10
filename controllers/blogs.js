@@ -3,6 +3,16 @@ const blogsRouter = require("express").Router();
 // Modelo Blog de Mongoose
 const Blog = require("../models/blog");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+
+//aisla el token
+const getTokenFrom = (req) => {
+  const authorization = req.get("authorization");
+  if (authorization && authorization.startsWith("Bearer")) {
+    return authorization.replace("Bearer ", "");
+  }
+  return null;
+};
 
 // Obtener todos los blogs
 blogsRouter.get("/", async (req, res, next) => {
@@ -29,7 +39,12 @@ blogsRouter.post("/", async (req, res, next) => {
   const body = req.body;
 
   try {
-    const user = await User.findById(body.userId);
+    const decodedToken = jwt.verify(getTokenFrom(req), process.env.SECRET);
+    if (!decodedToken.id) {
+      return res.status(401).json({ error: "token invalid" });
+    }
+
+    const user = await User.findById(decodedToken.id);
 
     const blog = new Blog({
       title: body.title,
